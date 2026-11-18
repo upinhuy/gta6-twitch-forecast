@@ -18,7 +18,7 @@ It reads every `<id>.in` case in the input directory and writes `<id>.out` with 
 
 The house baseline just repeats hour 1 forever. This entry instead learns the day's shape from the case's own comparables — the full release-day hourly curves of 29 past big game launches:
 
-1. **Filter.** A launch whose hour 1 was still before its own midnight unlock has a near-zero hour 1, so its ratio to hour 1 explodes and says nothing about the day's shape. Those are left out (hour 1 below 5% of the day's peak).
+1. **Filter.** A launch whose hour 1 was still before its own midnight unlock has a near-zero hour 1, so its ratio to hour 1 explodes and says nothing about the day's shape. Those are left out (hour 1 below 5% of the day's peak). Launches whose research note tiers them as early-access-contaminated or weak are left out too — GTA VI has no early access, so only Tier: comparable launches are true analogues.
 2. **Shape.** For the launches that remain, the day's shape is the median, hour by hour, of log(viewers(h) / viewers(1)). On the practice cases it dips to about 0.72× hour 1 in the small hours and rises to about 1.8× by hour 23, as time zones unlock through the day.
 3. **Spread.** The spread at each hour is the interquartile range of those log ratios, floored at 0.30 log units, so no hour is overconfident.
 4. **Forecast.** Hour 1's print scaled by that shape, with quantiles from the spread: `q = p1 * exp(median + z * sigma)`.
