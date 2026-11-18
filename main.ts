@@ -40,7 +40,7 @@ const UNLOCKED_SHARE = 0.05;
 const SIGMA_FLOOR = 0.3;
 
 type HourlyPoint = { from: string; viewers: number };
-type Comparable = { day_start: string; hourly: HourlyPoint[] };
+type Comparable = { day_start: string; hourly: HourlyPoint[]; unlock?: string };
 type CaseFile = {
   levels: number[];
   known: Array<{ hour: number; viewers: number }>;
@@ -77,6 +77,12 @@ function releaseDay(c: Comparable): number[] | null {
 function shapeOf(comparables: Comparable[]): { shape: number[]; sigma: number[] } {
   const logRatios: number[][] = Array.from({ length: 24 }, () => []);
   for (const c of comparables || []) {
+    // The case grades each comparable's research note with a tier. GTA VI has
+    // no early access, so only Tier: comparable launches are true analogues:
+    // early-access launches peaked days before release day, and weak ones are
+    // free-to-play or live-service launches with a different shape. When the
+    // tier is not named, the launch is kept and the hour-1 filter below still applies.
+    if (c.unlock && !c.unlock.includes('Tier: comparable')) continue;
     const day = releaseDay(c);
     if (!day || day[0] <= 0) continue;
     const peak = Math.max(...day);
